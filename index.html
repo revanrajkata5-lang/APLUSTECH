@@ -413,8 +413,8 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 <header id="siteHeader">
   <div class="wrap">
     <nav>
-     <a href="#top" class="logo logo-brand">
-    <img src="logo.png" alt="A+ Tech Services logo" class="logo-img">
+     <a href="#top" class="logo logo-brand" id="logoBrand">
+    <img src="logo.png" alt="A+ Tech Services logo" class="logo-img" id="logoImg">
 </a>
       <div class="nav-links" id="navLinks">
         <a href="#pillars">Services</a>
@@ -438,12 +438,28 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
     </h1>
     <p class="hero-sub" id="heroSub">One team. Two disciplines. We grow your visibility on Google and build the software that runs your business — for companies in India, USA, UAE and Canada.</p>
     <div class="hero-btns" id="heroBtns">
-      <a href="#pillars" class="btn btn-primary">Grow My Business</a>
-      <a href="#pillars" class="btn btn-secondary">Build My Product</a>
+      <a href="#pillars" class="btn btn-primary" data-path="marketing">Grow My Business</a>
+      <a href="#pillars" class="btn btn-secondary" data-path="it">Build My Product</a>
     </div>
   </div>
   <div class="scroll-cue" id="scrollCue"><span class="dot" style="background-color: #FFCD42;"></span> SCROLL TO EXPLORE</div>
 </section>
+
+<div class="path-modal-overlay" id="pathModalOverlay" role="dialog" aria-modal="true" aria-labelledby="pathModalTitle">
+  <div class="path-modal" id="pathModal">
+    <button class="path-modal-close" id="pathModalClose" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <p class="pillar-tag" id="pathModalTag">Get Found</p>
+    <h3 id="pathModalTitle">Marketing Services</h3>
+    <p class="path-modal-sub" id="pathModalSub">One team, one plan, built to get you found and chosen.</p>
+    <ul class="pillar-list" id="pathModalList"></ul>
+    <div class="path-modal-actions">
+      <button class="btn btn-primary" id="pathModalCta" style="justify-content:center;">See full breakdown</button>
+      <a href="#contact" class="btn btn-secondary" style="justify-content:center;">Get a Quote instead</a>
+    </div>
+  </div>
+</div>
 
 <div class="trust-bar">
   <div class="wrap trust-grid">
@@ -462,7 +478,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
       <p>Whether you need people finding you on Google or software running behind the scenes, pick your lane below — everything else on this site follows from here.</p>
     </div>
     <div class="pillars">
-      <div class="pillar marketing reveal-l tilt-3d">
+      <div class="pillar marketing reveal-l tilt-3d" id="pillar-marketing">
         <p class="pillar-tag">Get Found</p>
         <h3>Marketing Services</h3>
         <ul class="pillar-list">
@@ -473,7 +489,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
         </ul>
         <a href="#calculator" class="pillar-arrow">Explore Marketing <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <div class="pillar it reveal-r tilt-3d">
+      <div class="pillar it reveal-r tilt-3d" id="pillar-it">
         <p class="pillar-tag">Get Built</p>
         <h3>IT Solutions</h3>
         <ul class="pillar-list">
