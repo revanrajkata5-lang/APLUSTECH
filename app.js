@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function(){
   navToggle.addEventListener('click', ()=> navLinks.classList.toggle('open'));
   navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> navLinks.classList.remove('open')));
 
+  /* ---------- Premium 3D logo entrance ---------- */
+  gsap.to('#logoBrand', {
+    opacity:1, scale:1, rotateY:0, duration:1.1, ease:'back.out(1.6)', delay:0.15
+  });
+
   /* ---------- Hero text reveal (letter/word stagger) ---------- */
   const tl = gsap.timeline({defaults:{ease:'power4.out'}});
   tl.to('#heroEyebrow',{opacity:1,duration:.6},0.1)
@@ -105,6 +110,34 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function reduceMotionCheck(){
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /* ---------- Premium 3D tilt for the logo mark itself ---------- */
+  const logoBrandEl = document.getElementById('logoBrand');
+  const logoImgEl = document.getElementById('logoImg');
+  if(logoBrandEl && logoImgEl){
+    if(isFinePointer && !reduceMotionCheck()){
+      const logoRotY = gsap.quickTo(logoImgEl, 'rotationY', {duration:0.35, ease:'power3.out'});
+      const logoRotX = gsap.quickTo(logoImgEl, 'rotationX', {duration:0.35, ease:'power3.out'});
+      const logoScale = gsap.quickTo(logoImgEl, 'scale', {duration:0.35, ease:'power3.out'});
+      logoBrandEl.addEventListener('mousemove', (e)=>{
+        const r = logoBrandEl.getBoundingClientRect();
+        const px = (e.clientX - r.left)/r.width - 0.5;
+        const py = (e.clientY - r.top)/r.height - 0.5;
+        logoRotY(px*22);
+        logoRotX(-py*22);
+        logoScale(1.08);
+      });
+      logoBrandEl.addEventListener('mouseleave', ()=>{
+        logoRotY(0); logoRotX(0); logoScale(1);
+      });
+    } else if(!reduceMotionCheck()){
+      // touch devices: a slow, gentle idle sway instead of mouse tilt
+      gsap.to(logoImgEl, {
+        rotationY:8, rotationX:-4, duration:2.6, ease:'sine.inOut',
+        repeat:-1, yoyo:true, transformPerspective:600
+      });
+    }
   }
 
   /* ---------- Counter animation on trust bar ---------- */
@@ -259,5 +292,98 @@ document.addEventListener('DOMContentLoaded', function(){
   /* ---------- WhatsApp FAB ---------- */
   document.getElementById('waFab').addEventListener('click', ()=>{
     window.open('https://wa.me/', '_blank');
+  });
+
+  /* ---------- Hero "two paths" summary modal ---------- */
+  const pathContent = {
+    marketing: {
+      tag: 'Get Found',
+      title: 'Marketing Services',
+      sub: 'Visibility, leads and rankings — everything that gets your business found and chosen on Google.',
+      items: [
+        'Google Business Profile & SEO',
+        'Website Design & Development',
+        'Meta & Google Ads Management',
+        'YouTube Ads & Bulk SMS'
+      ],
+      targetId: 'pillar-marketing'
+    },
+    it: {
+      tag: 'Get Built',
+      title: 'IT Solutions',
+      sub: 'Custom software and apps built around how your business actually runs, not a generic template.',
+      items: [
+        'App Development (Android/iOS)',
+        'Billing & Custom Software',
+        'Geofencing Solutions',
+        'WhatsApp Business Automation'
+      ],
+      targetId: 'pillar-it'
+    }
+  };
+
+  const pathModalOverlay = document.getElementById('pathModalOverlay');
+  const pathModal = document.getElementById('pathModal');
+  const pathModalTag = document.getElementById('pathModalTag');
+  const pathModalTitle = document.getElementById('pathModalTitle');
+  const pathModalSub = document.getElementById('pathModalSub');
+  const pathModalList = document.getElementById('pathModalList');
+  const pathModalCta = document.getElementById('pathModalCta');
+  const pathModalClose = document.getElementById('pathModalClose');
+  let activePath = null;
+  let lastFocused = null;
+
+  function openPathModal(key){
+    const data = pathContent[key];
+    if(!data) return;
+    activePath = key;
+    pathModalTag.textContent = data.tag;
+    pathModalTitle.textContent = data.title;
+    pathModalSub.textContent = data.sub;
+    pathModalList.innerHTML = data.items.map(i => `<li>${i} <span>&rarr;</span></li>`).join('');
+    pathModalCta.textContent = key === 'marketing' ? 'Explore Marketing' : 'Explore IT Solutions';
+    lastFocused = document.activeElement;
+    pathModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    pathModalClose.focus();
+  }
+
+  function closePathModal(){
+    pathModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    if(lastFocused) lastFocused.focus();
+  }
+
+  function goToActivePillar(){
+    const data = pathContent[activePath];
+    closePathModal();
+    if(!data) return;
+    const target = document.getElementById(data.targetId);
+    if(!target) return;
+    // let the close animation clear before scrolling
+    setTimeout(()=>{
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      target.classList.remove('pillar-highlight');
+      // force reflow so the animation can retrigger if clicked again
+      void target.offsetWidth;
+      target.classList.add('pillar-highlight');
+      setTimeout(()=> target.classList.remove('pillar-highlight'), 3600);
+    }, 200);
+  }
+
+  document.querySelectorAll('[data-path]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openPathModal(btn.getAttribute('data-path'));
+    });
+  });
+
+  pathModalCta.addEventListener('click', goToActivePillar);
+  pathModalClose.addEventListener('click', closePathModal);
+  pathModalOverlay.addEventListener('click', (e)=>{
+    if(e.target === pathModalOverlay) closePathModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && pathModalOverlay.classList.contains('open')) closePathModal();
   });
 });
