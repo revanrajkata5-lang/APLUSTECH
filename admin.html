@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Aplus Tech Services</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#031B6B;
+  --surface:#0A2680;
+  --surface-2:#123194;
+  --line:#2647A0;
+  --teal:#0541BB;
+  --violet:#7EA0F0;
+  --text:#FDFDFD;
+  --muted:#B7C4EA;
+  --muted-2:#8497CC;
+  --highlight:#FFCD42;
+  --radius:14px;
+  --display:'Space Grotesk',sans-serif;
+  --body:'Inter',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--body),system-ui,sans-serif;
+  min-height:100vh;
+}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
+
+/* ---- Login ---- */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.login-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:36px;width:100%;max-width:380px;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,0.55);
+}
+.login-card h1{font-size:22px;margin-bottom:6px;}
+.login-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.field{margin-bottom:16px;display:flex;flex-direction:column;gap:6px;}
+.field label{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.field input{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:11px 13px;color:var(--text);font-size:15px;
+}
+.field input:focus{outline:none;border-color:var(--violet);}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:10px;padding:12px 20px;font-weight:600;font-size:14px;
+  border:none;cursor:pointer;font-family:inherit;
+}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--violet));color:#fff;width:100%;}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
+#loginError{color:#FF8686;font-size:13px;margin-top:12px;min-height:16px;}
+
+/* ---- Dashboard ---- */
+#dashScreen{display:none;}
+.dash-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:28px;flex-wrap:wrap;gap:12px;
+}
+.dash-header h1{font-family:var(--display);font-size:26px;}
+.dash-header span{color:var(--muted);font-size:14px;}
+.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:16px 22px;min-width:130px;
+}
+.stat-card .num{font-family:var(--mono);font-size:26px;color:var(--highlight);}
+.stat-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
+
+.leads-table-wrap{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+}
+table{width:100%;border-collapse:collapse;}
+th{
+  text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);
+}
+td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+.lead-name{font-weight:600;}
+.lead-meta{color:var(--muted-2);font-size:12px;margin-top:2px;}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.badge-new{background:rgba(255,205,66,0.18);color:var(--highlight);}
+.badge-contacted{background:rgba(126,224,160,0.18);color:#7EE0A0;}
+.status-btn{
+  background:transparent;border:1px solid var(--line);color:var(--text);
+  border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;
+}
+.status-btn:hover{border-color:var(--violet);}
+.msg-cell{max-width:260px;color:var(--muted);}
+.empty-state{padding:60px 20px;text-align:center;color:var(--muted);}
+#dashError{color:#FF8686;font-size:13px;margin-bottom:16px;}
+@media (max-width:800px){
+  .leads-table-wrap{overflow-x:auto;}
+  table{min-width:700px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <h1>Admin Login</h1>
+    <p>Aplus Tech Services — leads dashboard</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="li-email">Email</label>
+        <input type="email" id="li-email" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="li-password">Password</label>
+        <input type="password" id="li-password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+      <p id="loginError"></p>
+    </form>
+  </div>
+</div>
+
+<div id="dashScreen">
+  <div class="wrap">
+    <div class="dash-header">
+      <div>
+        <h1>Leads Dashboard</h1>
+        <span id="userEmail"></span>
+      </div>
+      <button class="btn btn-ghost" id="logoutBtn">Sign Out</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total Leads</div></div>
+      <div class="stat-card"><div class="num" id="statNew">0</div><div class="label">New</div></div>
+      <div class="stat-card"><div class="num" id="statContacted">0</div><div class="label">Contacted</div></div>
+    </div>
+
+    <p id="dashError"></p>
+
+    <div class="leads-table-wrap">
+      <table id="leadsTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Service</th>
+            <th>Message</th>
+            <th>Received</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="leadsBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState">No leads yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://yiilklntrxzseteqtpyd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpaWxrbG50cnh6c2V0ZXF0cHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NDksImV4cCI6MjEwMjAyMjk0OX0._SrPeyVL0BSLbacwX3ctGXmBERnDeJIOfSQ_2oWqVYE';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const loginScreen = document.getElementById('loginScreen');
+const dashScreen = document.getElementById('dashScreen');
+const loginForm = document.getElementById('loginForm');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+const userEmail = document.getElementById('userEmail');
+const dashError = document.getElementById('dashError');
+const leadsTable = document.getElementById('leadsTable');
+const leadsBody = document.getElementById('leadsBody');
+const emptyState = document.getElementById('emptyState');
+
+function showDash(session){
+  loginScreen.style.display = 'none';
+  dashScreen.style.display = 'block';
+  userEmail.textContent = session.user.email;
+  loadLeads();
+}
+function showLogin(){
+  dashScreen.style.display = 'none';
+  loginScreen.style.display = 'flex';
+}
+
+// Restore session on load
+supabaseClient.auth.getSession().then(({ data:{ session } })=>{
+  if(session) showDash(session); else showLogin();
+});
+
+loginForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  loginError.textContent = '';
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Signing in...';
+
+  const email = document.getElementById('li-email').value.trim();
+  const password = document.getElementById('li-password').value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  loginBtn.disabled = false;
+  loginBtn.textContent = 'Sign In';
+
+  if(error){
+    loginError.textContent = error.message;
+    return;
+  }
+  showDash(data.session);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  await supabaseClient.auth.signOut();
+  showLogin();
+});
+
+async function loadLeads(){
+  dashError.textContent = '';
+  const { data, error } = await supabaseClient
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending:false });
+
+  if(error){
+    dashError.textContent = 'Could not load leads: ' + error.message;
+    return;
+  }
+
+  renderStats(data);
+  renderTable(data);
+}
+
+function renderStats(leads){
+  document.getElementById('statTotal').textContent = leads.length;
+  document.getElementById('statNew').textContent = leads.filter(l=>l.status==='new').length;
+  document.getElementById('statContacted').textContent = leads.filter(l=>l.status==='contacted').length;
+}
+
+function esc(str){
+  if(str===null || str===undefined) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function renderTable(leads){
+  if(!leads.length){
+    leadsTable.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+  leadsTable.style.display = 'table';
+  emptyState.style.display = 'none';
+
+  leadsBody.innerHTML = leads.map(lead=>{
+    const date = new Date(lead.created_at).toLocaleString();
+    const isNew = lead.status === 'new';
+    return `
+      <tr data-id="${lead.id}">
+        <td>
+          <div class="lead-name">${esc(lead.name)}</div>
+          <div class="lead-meta">${esc(lead.email)}${lead.phone ? ' · ' + esc(lead.phone) : ''}</div>
+        </td>
+        <td>${esc(lead.service_interest) || '—'}</td>
+        <td class="msg-cell">${esc(lead.message) || '—'}</td>
+        <td>${date}</td>
+        <td><span class="badge ${isNew ? 'badge-new' : 'badge-contacted'}">${isNew ? 'New' : 'Contacted'}</span></td>
+        <td>
+          <button class="status-btn" data-toggle="${lead.id}" data-current="${lead.status}">
+            Mark as ${isNew ? 'Contacted' : 'New'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  leadsBody.querySelectorAll('[data-toggle]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.toggle;
+      const newStatus = btn.dataset.current === 'new' ? 'contacted' : 'new';
+      btn.disabled = true;
+      const { error } = await supabaseClient.from('leads').update({ status:newStatus }).eq('id', id);
+      btn.disabled = false;
+      if(error){
+        dashError.textContent = 'Could not update status: ' + error.message;
+        return;
+      }
+      loadLeads();
+    });
+  });
+}
+</script>
+</body>
+</html>
