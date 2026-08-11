@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#031B6B;
@@ -331,6 +332,31 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
 .calc-result-num{font-family:var(--mono);font-weight:500;font-size:clamp(32px,4vw,46px);color:var(--highlight);margin:16px 0;transition:all .3s ease;text-shadow:var(--text-glow);}
 .calc-result-note{font-size:13px;color:var(--muted-2);margin-bottom:24px;}
 
+/* ---------- CONTACT FORM ---------- */
+.contact-form{
+  max-width:560px;margin:44px auto 0;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:32px;box-shadow:var(--shadow-card);
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:600px){.form-row{grid-template-columns:1fr;}}
+.form-field{margin-bottom:18px;display:flex;flex-direction:column;gap:8px;}
+.form-field label{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.form-field input,.form-field select,.form-field textarea{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+  outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(126,160,240,0.18);
+}
+.form-field textarea{resize:vertical;min-height:100px;font-family:var(--body);}
+.form-submit-btn{width:100%;justify-content:center;border:none;cursor:pointer;font-family:inherit;}
+.form-submit-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.form-status{margin-top:14px;font-size:14px;text-align:center;min-height:20px;}
+.form-status.success{color:#7EE0A0;}
+.form-status.error{color:#FF8686;}
+
 /* ---------- COUNTRIES ---------- */
 .countries{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
 @media (max-width:768px){.countries{grid-template-columns:repeat(2,1fr);}}
@@ -650,9 +676,47 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
   <div class="wrap">
     <h2 class="reveal-l" style="margin:0 auto;">Ready to grow, or ready to build?</h2>
     <p class="reveal-r">Tell us which — we'll route you to the right specialist within a day.</p>
-    <div class="final-btns reveal-l">
-      <a href="#" class="btn btn-primary">Get a Free Consultation</a>
-      <a href="#" class="btn btn-secondary">Chat on WhatsApp</a>
+
+    <form class="contact-form reveal-l" id="contactForm">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" required autocomplete="name">
+        </div>
+        <div class="form-field">
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" required autocomplete="email">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="cf-phone">Phone (optional)</label>
+          <input type="tel" id="cf-phone" name="phone" autocomplete="tel">
+        </div>
+        <div class="form-field">
+          <label for="cf-service">What do you need?</label>
+          <select id="cf-service" name="service">
+            <option value="">Select a service</option>
+            <option value="Website">Website Design &amp; Development</option>
+            <option value="SEO">SEO Services</option>
+            <option value="Ads">Meta / Google Ads Management</option>
+            <option value="App">App Development</option>
+            <option value="Software">Billing / Custom Software</option>
+            <option value="Geofencing">Geofencing Solutions</option>
+            <option value="Other">Other / Not sure yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="cf-message">Message (optional)</label>
+        <textarea id="cf-message" name="message" placeholder="Tell us a bit about your project or goals..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary form-submit-btn" id="cfSubmitBtn">Get a Free Consultation</button>
+      <p class="form-status" id="cfStatus"></p>
+    </form>
+
+    <div class="final-btns reveal-l" style="margin-top:24px;">
+      <a href="https://wa.me/" target="_blank" rel="noopener" class="btn btn-secondary">Chat on WhatsApp</a>
     </div>
   </div>
 </section>
@@ -702,8 +766,63 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 </div>
 
 <script>
+/* ---------- Supabase config ----------
+   The anon/public key is safe to expose in frontend code — it can
+   only do what the table's Row Level Security policies allow
+   (public insert into leads, nothing else). */
+const SUPABASE_URL = 'https://yiilklntrxzseteqtpyd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpaWxrbG50cnh6c2V0ZXF0cHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NDksImV4cCI6MjEwMjAyMjk0OX0._SrPeyVL0BSLbacwX3ctGXmBERnDeJIOfSQ_2oWqVYE';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 document.addEventListener('DOMContentLoaded', function(){
   gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- Contact form submission ---------- */
+  const contactForm = document.getElementById('contactForm');
+  const cfSubmitBtn = document.getElementById('cfSubmitBtn');
+  const cfStatus = document.getElementById('cfStatus');
+  if(contactForm){
+    contactForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      cfStatus.textContent = '';
+      cfStatus.className = 'form-status';
+
+      const name = document.getElementById('cf-name').value.trim();
+      const email = document.getElementById('cf-email').value.trim();
+      const phone = document.getElementById('cf-phone').value.trim();
+      const service = document.getElementById('cf-service').value;
+      const message = document.getElementById('cf-message').value.trim();
+
+      if(!name || !email){
+        cfStatus.textContent = 'Please fill in your name and email.';
+        cfStatus.className = 'form-status error';
+        return;
+      }
+
+      cfSubmitBtn.disabled = true;
+      cfSubmitBtn.textContent = 'Sending...';
+
+      const { error } = await supabaseClient.from('leads').insert({
+        name, email,
+        phone: phone || null,
+        service_interest: service || null,
+        message: message || null
+      });
+
+      cfSubmitBtn.disabled = false;
+      cfSubmitBtn.textContent = 'Get a Free Consultation';
+
+      if(error){
+        console.error('Lead submit error:', error);
+        cfStatus.textContent = 'Something went wrong. Please try again or WhatsApp us.';
+        cfStatus.className = 'form-status error';
+      } else {
+        cfStatus.textContent = "Thanks! We'll get back to you within a day.";
+        cfStatus.className = 'form-status success';
+        contactForm.reset();
+      }
+    });
+  }
 
   /* ---------- Nav scroll state ---------- */
   const header = document.getElementById('siteHeader');
