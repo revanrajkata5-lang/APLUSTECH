@@ -5,162 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Aplus Tech Services</title>
 <meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#031B6B;
-  --surface:#0A2680;
-  --surface-2:#123194;
-  --line:#2647A0;
-  --teal:#0541BB;
-  --violet:#7EA0F0;
-  --text:#FDFDFD;
-  --muted:#B7C4EA;
-  --muted-2:#8497CC;
-  --highlight:#FFCD42;
+  --bg:#031B6B; --surface:#0A2680; --surface-2:#123194; --line:#2647A0;
+  --teal:#0541BB; --violet:#7EA0F0; --highlight:#FFCD42;
+  --text:#FDFDFD; --muted:#B7C4EA; --muted-2:#8497CC;
+  --display:'Space Grotesk',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
   --radius:14px;
-  --display:'Space Grotesk',sans-serif;
-  --body:'Inter',sans-serif;
-  --mono:'JetBrains Mono',monospace;
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.05) inset, 0 0 0 1px rgba(255,255,255,0.03) inset, 0 18px 40px -18px rgba(0,0,0,0.55);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
-  background:var(--bg);color:var(--text);
-  font-family:var(--body),system-ui,sans-serif;
-  min-height:100vh;
-}
-.wrap{max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
-
-/* ---- Login ---- */
-#loginScreen{
+  background:var(--bg);color:var(--text);font-family:var(--body);
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
 }
-.login-card{
-  background:var(--surface);border:1px solid var(--line);border-radius:16px;
-  padding:36px;width:100%;max-width:380px;
-  box-shadow:0 18px 40px -18px rgba(0,0,0,0.55);
+.wrap{width:100%;max-width:480px;}
+.wrap.dashboard{max-width:760px;}
+h1{font-family:var(--display);font-size:26px;font-weight:700;margin-bottom:8px;}
+.sub{color:var(--muted);font-size:14.5px;margin-bottom:32px;}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:32px;box-shadow:var(--shadow-card);
 }
-.login-card h1{font-size:22px;margin-bottom:6px;}
-.login-card p{color:var(--muted);font-size:14px;margin-bottom:24px;}
-.field{margin-bottom:16px;display:flex;flex-direction:column;gap:6px;}
-.field label{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.field{margin-bottom:18px;display:flex;flex-direction:column;gap:8px;}
+.field label{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
 .field input{
   background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
-  padding:11px 13px;color:var(--text);font-size:15px;
+  padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;
 }
-.field input:focus{outline:none;border-color:var(--violet);}
+.field input:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(126,160,240,0.18);}
+.field input[type="file"]{padding:10px;font-size:13px;color:var(--muted);}
 .btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  border-radius:10px;padding:12px 20px;font-weight:600;font-size:14px;
-  border:none;cursor:pointer;font-family:inherit;
+  width:100%;padding:14px;border-radius:100px;font-weight:600;font-size:15px;
+  background:var(--teal);color:#FDFDFD;border:none;cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease;
 }
-.btn-primary{background:linear-gradient(135deg,var(--teal),var(--violet));color:#fff;width:100%;}
-.btn-primary:disabled{opacity:0.6;cursor:not-allowed;}
-.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
-#loginError{color:#FF8686;font-size:13px;margin-top:12px;min-height:16px;}
-
-/* ---- Dashboard ---- */
-#dashScreen{display:none;}
-.dash-header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:28px;flex-wrap:wrap;gap:12px;
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px -10px rgba(5,65,187,0.55);}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.btn-secondary{background:rgba(255,255,255,0.04);border:1px solid var(--line);}
+.status{margin-top:14px;font-size:13.5px;text-align:center;min-height:18px;}
+.status.error{color:#FF8686;}
+.status.success{color:#7EE0A0;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+.top-bar .btn{width:auto;padding:10px 20px;font-size:13.5px;}
+.list{margin-top:28px;display:grid;gap:12px;}
+.list-item{
+  display:flex;align-items:center;gap:16px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px;
 }
-.dash-header h1{font-family:var(--display);font-size:26px;}
-.dash-header span{color:var(--muted);font-size:14px;}
-.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
-.stat-card{
-  background:var(--surface);border:1px solid var(--line);border-radius:12px;
-  padding:16px 22px;min-width:130px;
+.list-item img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:8px;padding:6px;flex-shrink:0;}
+.list-item .info{flex:1;min-width:0;}
+.list-item .info b{display:block;font-family:var(--display);font-size:15px;}
+.list-item .info a{display:block;font-size:12.5px;color:var(--muted);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.list-item .del-btn{
+  background:rgba(255,134,134,0.12);border:1px solid rgba(255,134,134,0.3);color:#FF8686;
+  padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;flex-shrink:0;
 }
-.stat-card .num{font-family:var(--mono);font-size:26px;color:var(--highlight);}
-.stat-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
-
-.leads-table-wrap{
-  background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+.list-item .del-btn:hover{background:rgba(255,134,134,0.22);}
+.empty-note{color:var(--muted-2);font-size:14px;text-align:center;padding:20px 0;}
+.divider{border-top:1px solid var(--line);margin:28px 0;}
+.tabs{display:flex;gap:8px;margin-bottom:20px;}
+.tab-btn{
+  background:none;border:1px solid var(--line);color:var(--muted);
+  padding:10px 18px;border-radius:100px;font-family:var(--body);font-size:14px;
+  cursor:pointer;transition:all .2s ease;display:flex;align-items:center;gap:8px;
 }
-table{width:100%;border-collapse:collapse;}
-th{
-  text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;
-  color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);
+.tab-btn:hover{color:var(--text);border-color:var(--muted-2);}
+.tab-btn.active{background:var(--teal);border-color:var(--teal);color:#FDFDFD;}
+.tab-count{
+  background:rgba(255,205,66,0.2);color:var(--highlight);font-family:var(--mono);
+  font-size:11px;padding:2px 7px;border-radius:100px;
 }
-td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top;}
-tr:last-child td{border-bottom:none;}
-.lead-name{font-weight:600;}
-.lead-meta{color:var(--muted-2);font-size:12px;margin-top:2px;}
-.badge{
-  display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.5px;
+.tab-btn.active .tab-count{background:rgba(255,255,255,0.2);color:#fff;}
+.lead-item{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+  padding:16px 18px;
 }
-.badge-new{background:rgba(255,205,66,0.18);color:var(--highlight);}
-.badge-contacted{background:rgba(126,224,160,0.18);color:#7EE0A0;}
-.status-btn{
-  background:transparent;border:1px solid var(--line);color:var(--text);
-  border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;
+.lead-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.lead-name{font-family:var(--display);font-size:16px;font-weight:600;}
+.lead-time{font-family:var(--mono);font-size:11px;color:var(--muted-2);white-space:nowrap;}
+.lead-meta{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:8px;font-size:13.5px;color:var(--muted);}
+.lead-meta a{color:var(--violet);text-decoration:none;}
+.lead-service{
+  display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;
+  letter-spacing:1px;text-transform:uppercase;color:var(--highlight);
+  background:rgba(255,205,66,0.1);padding:4px 10px;border-radius:100px;
 }
-.status-btn:hover{border-color:var(--violet);}
-.msg-cell{max-width:260px;color:var(--muted);}
-.empty-state{padding:60px 20px;text-align:center;color:var(--muted);}
-#dashError{color:#FF8686;font-size:13px;margin-bottom:16px;}
-@media (max-width:800px){
-  .leads-table-wrap{overflow-x:auto;}
-  table{min-width:700px;}
-}
+.lead-message{margin-top:10px;font-size:14px;color:var(--text);line-height:1.5;}
+.lead-actions{margin-top:14px;display:flex;justify-content:flex-end;}
 </style>
 </head>
 <body>
 
-<div id="loginScreen">
-  <div class="login-card">
-    <h1>Admin Login</h1>
-    <p>Aplus Tech Services — leads dashboard</p>
+<div class="wrap" id="loginView">
+  <h1>Admin Login</h1>
+  <p class="sub">Sign in to manage collaboration logos.</p>
+  <div class="card">
     <form id="loginForm">
       <div class="field">
-        <label for="li-email">Email</label>
-        <input type="email" id="li-email" required autocomplete="username">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" required autocomplete="username">
       </div>
       <div class="field">
-        <label for="li-password">Password</label>
-        <input type="password" id="li-password" required autocomplete="current-password">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
-      <p id="loginError"></p>
+      <button type="submit" class="btn" id="loginBtn">Sign In</button>
+      <p class="status" id="loginStatus"></p>
     </form>
   </div>
 </div>
 
-<div id="dashScreen">
-  <div class="wrap">
-    <div class="dash-header">
-      <div>
-        <h1>Leads Dashboard</h1>
-        <span id="userEmail"></span>
+<div class="wrap dashboard" id="dashboardView" style="display:none;">
+  <div class="top-bar">
+    <div>
+      <h1 style="margin-bottom:2px;">Collaborations</h1>
+      <p class="sub" style="margin-bottom:0;">Add or remove partner logos.</p>
+    </div>
+    <button class="btn btn-secondary" id="logoutBtn">Log Out</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="collabTab">Collaborations</button>
+    <button class="tab-btn" data-tab="leadsTab">Consultation Requests <span class="tab-count" id="leadsCount"></span></button>
+  </div>
+
+  <div class="card tab-panel" id="collabTab">
+    <form id="uploadForm">
+      <div class="field">
+        <label for="collabName">Company / partner name</label>
+        <input type="text" id="collabName" required>
       </div>
-      <button class="btn btn-ghost" id="logoutBtn">Sign Out</button>
+      <div class="field">
+        <label for="collabUrl">Website link</label>
+        <input type="url" id="collabUrl" placeholder="https://example.com" required>
+      </div>
+      <div class="field">
+        <label for="collabLogo">Logo image file</label>
+        <input type="file" id="collabLogo" accept="image/*" required>
+      </div>
+      <button type="submit" class="btn" id="uploadBtn">Add Collaboration</button>
+      <p class="status" id="uploadStatus"></p>
+    </form>
+
+    <div class="divider"></div>
+
+    <div class="list" id="collabList">
+      <p class="empty-note">Loading…</p>
     </div>
+  </div>
 
-    <div class="stats">
-      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Total Leads</div></div>
-      <div class="stat-card"><div class="num" id="statNew">0</div><div class="label">New</div></div>
-      <div class="stat-card"><div class="num" id="statContacted">0</div><div class="label">Contacted</div></div>
-    </div>
-
-    <p id="dashError"></p>
-
-    <div class="leads-table-wrap">
-      <table id="leadsTable" style="display:none;">
-        <thead>
-          <tr>
-            <th>Contact</th>
-            <th>Service</th>
-            <th>Message</th>
-            <th>Received</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="leadsBody"></tbody>
-      </table>
-      <div class="empty-state" id="emptyState">No leads yet.</div>
+  <div class="card tab-panel" id="leadsTab" style="display:none;">
+    <p class="sub" style="margin-bottom:20px;">People who submitted the "Get a Free Consultation" form on your site.</p>
+    <div class="list" id="leadsList">
+      <p class="empty-note">Loading…</p>
     </div>
   </div>
 </div>
@@ -169,135 +170,242 @@ tr:last-child td{border-bottom:none;}
 const SUPABASE_URL = 'https://yiilklntrxzseteqtpyd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpaWxrbG50cnh6c2V0ZXF0cHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NDY5NDksImV4cCI6MjEwMjAyMjk0OX0._SrPeyVL0BSLbacwX3ctGXmBERnDeJIOfSQ_2oWqVYE';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const BUCKET = 'collaborator-logos';
 
-const loginScreen = document.getElementById('loginScreen');
-const dashScreen = document.getElementById('dashScreen');
+const loginView = document.getElementById('loginView');
+const dashboardView = document.getElementById('dashboardView');
 const loginForm = document.getElementById('loginForm');
 const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
-const userEmail = document.getElementById('userEmail');
-const dashError = document.getElementById('dashError');
-const leadsTable = document.getElementById('leadsTable');
-const leadsBody = document.getElementById('leadsBody');
-const emptyState = document.getElementById('emptyState');
+const loginStatus = document.getElementById('loginStatus');
+const logoutBtn = document.getElementById('logoutBtn');
+const uploadForm = document.getElementById('uploadForm');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadStatus = document.getElementById('uploadStatus');
+const collabList = document.getElementById('collabList');
 
-function showDash(session){
-  loginScreen.style.display = 'none';
-  dashScreen.style.display = 'block';
-  userEmail.textContent = session.user.email;
+function showDashboard(){
+  loginView.style.display = 'none';
+  dashboardView.style.display = 'block';
+  loadCollaborators();
+  loadLeads();
+}
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).style.display = 'block';
+  });
+});
+
+function formatLeadDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) +
+    ' · ' + d.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+}
+
+async function loadLeads(){
+  const leadsList = document.getElementById('leadsList');
+  const leadsCount = document.getElementById('leadsCount');
+  leadsList.innerHTML = '<p class="empty-note">Loading…</p>';
+
+  const { data, error } = await supabaseClient
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if(error){
+    leadsList.innerHTML = '<p class="empty-note">Could not load consultation requests.</p>';
+    console.error(error);
+    return;
+  }
+
+  leadsCount.textContent = data ? data.length : '';
+
+  if(!data || data.length === 0){
+    leadsList.innerHTML = '<p class="empty-note">No consultation requests yet.</p>';
+    return;
+  }
+
+  leadsList.innerHTML = data.map(l => `
+    <div class="lead-item" data-id="${l.id}">
+      <div class="lead-top">
+        <span class="lead-name">${l.name}</span>
+        <span class="lead-time">${formatLeadDate(l.created_at)}</span>
+      </div>
+      <div class="lead-meta">
+        <a href="mailto:${l.email}">${l.email}</a>
+        ${l.phone ? `<span>${l.phone}</span>` : ''}
+      </div>
+      ${l.service_interest ? `<span class="lead-service">${l.service_interest}</span>` : ''}
+      ${l.message ? `<p class="lead-message">${l.message}</p>` : ''}
+      <div class="lead-actions">
+        <button class="del-btn" data-id="${l.id}">Delete</button>
+      </div>
+    </div>
+  `).join('');
+
+  leadsList.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteLead(btn.dataset.id));
+  });
+}
+
+async function deleteLead(id){
+  if(!confirm('Delete this consultation request?')) return;
+  const { error } = await supabaseClient.from('leads').delete().eq('id', id);
+  if(error){
+    alert('Failed to delete: ' + error.message);
+    return;
+  }
   loadLeads();
 }
 function showLogin(){
-  dashScreen.style.display = 'none';
-  loginScreen.style.display = 'flex';
+  loginView.style.display = 'block';
+  dashboardView.style.display = 'none';
 }
 
-// Restore session on load
-supabaseClient.auth.getSession().then(({ data:{ session } })=>{
-  if(session) showDash(session); else showLogin();
+// Check existing session on load
+supabaseClient.auth.getSession().then(({ data }) => {
+  if(data.session) showDashboard(); else showLogin();
+});
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if(session) showDashboard(); else showLogin();
 });
 
-loginForm.addEventListener('submit', async (e)=>{
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  loginError.textContent = '';
+  loginStatus.textContent = '';
+  loginStatus.className = 'status';
   loginBtn.disabled = true;
-  loginBtn.textContent = 'Signing in...';
+  loginBtn.textContent = 'Signing in…';
 
-  const email = document.getElementById('li-email').value.trim();
-  const password = document.getElementById('li-password').value;
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   loginBtn.disabled = false;
   loginBtn.textContent = 'Sign In';
 
   if(error){
-    loginError.textContent = error.message;
-    return;
+    loginStatus.textContent = 'Invalid email or password.';
+    loginStatus.className = 'status error';
   }
-  showDash(data.session);
 });
 
-document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+logoutBtn.addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
-  showLogin();
 });
 
-async function loadLeads(){
-  dashError.textContent = '';
+async function loadCollaborators(){
+  collabList.innerHTML = '<p class="empty-note">Loading…</p>';
   const { data, error } = await supabaseClient
-    .from('leads')
+    .from('collaborators')
     .select('*')
-    .order('created_at', { ascending:false });
+    .order('created_at', { ascending: false });
 
   if(error){
-    dashError.textContent = 'Could not load leads: ' + error.message;
+    collabList.innerHTML = '<p class="empty-note">Could not load collaborations.</p>';
+    console.error(error);
     return;
   }
 
-  renderStats(data);
-  renderTable(data);
-}
-
-function renderStats(leads){
-  document.getElementById('statTotal').textContent = leads.length;
-  document.getElementById('statNew').textContent = leads.filter(l=>l.status==='new').length;
-  document.getElementById('statContacted').textContent = leads.filter(l=>l.status==='contacted').length;
-}
-
-function esc(str){
-  if(str===null || str===undefined) return '';
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
-
-function renderTable(leads){
-  if(!leads.length){
-    leadsTable.style.display = 'none';
-    emptyState.style.display = 'block';
+  if(!data || data.length === 0){
+    collabList.innerHTML = '<p class="empty-note">No collaborations added yet.</p>';
     return;
   }
-  leadsTable.style.display = 'table';
-  emptyState.style.display = 'none';
 
-  leadsBody.innerHTML = leads.map(lead=>{
-    const date = new Date(lead.created_at).toLocaleString();
-    const isNew = lead.status === 'new';
-    return `
-      <tr data-id="${lead.id}">
-        <td>
-          <div class="lead-name">${esc(lead.name)}</div>
-          <div class="lead-meta">${esc(lead.email)}${lead.phone ? ' · ' + esc(lead.phone) : ''}</div>
-        </td>
-        <td>${esc(lead.service_interest) || '—'}</td>
-        <td class="msg-cell">${esc(lead.message) || '—'}</td>
-        <td>${date}</td>
-        <td><span class="badge ${isNew ? 'badge-new' : 'badge-contacted'}">${isNew ? 'New' : 'Contacted'}</span></td>
-        <td>
-          <button class="status-btn" data-toggle="${lead.id}" data-current="${lead.status}">
-            Mark as ${isNew ? 'Contacted' : 'New'}
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join('');
+  collabList.innerHTML = data.map(c => `
+    <div class="list-item" data-id="${c.id}" data-path="${c.logo_path}">
+      <img src="${c.logo_url}" alt="${c.name}">
+      <div class="info">
+        <b>${c.name}</b>
+        <a href="${c.website_url}" target="_blank" rel="noopener">${c.website_url}</a>
+      </div>
+      <button class="del-btn" data-id="${c.id}" data-path="${c.logo_path}">Delete</button>
+    </div>
+  `).join('');
 
-  leadsBody.querySelectorAll('[data-toggle]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const id = btn.dataset.toggle;
-      const newStatus = btn.dataset.current === 'new' ? 'contacted' : 'new';
-      btn.disabled = true;
-      const { error } = await supabaseClient.from('leads').update({ status:newStatus }).eq('id', id);
-      btn.disabled = false;
-      if(error){
-        dashError.textContent = 'Could not update status: ' + error.message;
-        return;
-      }
-      loadLeads();
-    });
+  collabList.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteCollaborator(btn.dataset.id, btn.dataset.path));
   });
 }
+
+async function deleteCollaborator(id, logoPath){
+  if(!confirm('Remove this collaboration?')) return;
+
+  const { error: dbError } = await supabaseClient.from('collaborators').delete().eq('id', id);
+  if(dbError){
+    alert('Failed to delete: ' + dbError.message);
+    return;
+  }
+  if(logoPath){
+    await supabaseClient.storage.from(BUCKET).remove([logoPath]);
+  }
+  loadCollaborators();
+}
+
+uploadForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  uploadStatus.textContent = '';
+  uploadStatus.className = 'status';
+
+  const name = document.getElementById('collabName').value.trim();
+  const websiteUrl = document.getElementById('collabUrl').value.trim();
+  const fileInput = document.getElementById('collabLogo');
+  const file = fileInput.files[0];
+
+  if(!name || !websiteUrl || !file){
+    uploadStatus.textContent = 'Please fill in all fields.';
+    uploadStatus.className = 'status error';
+    return;
+  }
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Uploading…';
+
+  const ext = file.name.split('.').pop();
+  const filePath = `${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+
+  const { error: uploadError } = await supabaseClient.storage
+    .from(BUCKET)
+    .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+  if(uploadError){
+    uploadStatus.textContent = 'Upload failed: ' + uploadError.message;
+    uploadStatus.className = 'status error';
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = 'Add Collaboration';
+    return;
+  }
+
+  const { data: publicUrlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(filePath);
+  const logoUrl = publicUrlData.publicUrl;
+
+  const { error: insertError } = await supabaseClient.from('collaborators').insert({
+    name,
+    website_url: websiteUrl,
+    logo_path: filePath,
+    logo_url: logoUrl
+  });
+
+  uploadBtn.disabled = false;
+  uploadBtn.textContent = 'Add Collaboration';
+
+  if(insertError){
+    uploadStatus.textContent = 'Save failed: ' + insertError.message;
+    uploadStatus.className = 'status error';
+    await supabaseClient.storage.from(BUCKET).remove([filePath]);
+    return;
+  }
+
+  uploadStatus.textContent = 'Added successfully.';
+  uploadStatus.className = 'status success';
+  uploadForm.reset();
+  loadCollaborators();
+});
 </script>
 </body>
 </html>
