@@ -385,6 +385,49 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
 .proof-attr{margin-top:36px;font-size:14.5px;color:var(--muted);}
 .proof-attr b{color:var(--text);}
 
+/* ---------- FOUNDER ---------- */
+.founder-card{
+display:flex;align-items:center;gap:48px;
+background:var(--surface);border:1px solid var(--line);border-radius:20px;
+padding:48px;box-shadow:var(--shadow-card);
+}
+@media (max-width:768px){
+.founder-card{flex-direction:column;text-align:center;padding:36px 24px;gap:28px;}
+}
+.founder-photo-wrap{
+flex-shrink:0;width:220px;height:280px;border-radius:16px;
+overflow:hidden;border:1px solid var(--line);
+box-shadow:0 0 0 6px rgba(126,160,240,0.10), var(--shadow-card);
+}
+.founder-photo{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.founder-info h3{
+font-family:var(--display);font-size:26px;font-weight:600;
+text-shadow:var(--text-depth);
+}
+.founder-role{
+font-family:var(--mono);font-size:12.5px;letter-spacing:1.5px;
+text-transform:uppercase;color:var(--highlight);margin-top:8px;
+}
+.founder-bio{color:var(--muted);font-size:15.5px;margin-top:16px;max-width:60ch;line-height:1.7;}
+
+/* ---------- COLLABORATIONS ---------- */
+.collab-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
+@media (max-width:900px){.collab-grid{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:560px){.collab-grid{grid-template-columns:repeat(2,1fr);}}
+.collab-card{
+background:var(--surface);border:1px solid var(--line);border-radius:16px;
+padding:22px;display:flex;align-items:center;justify-content:center;min-height:96px;
+box-shadow:var(--shadow-card);transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.collab-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card-hover);border-color:var(--violet);}
+.collab-card img{
+max-width:100%;max-height:52px;object-fit:contain;
+filter:grayscale(1) brightness(1.6) opacity(.75);
+transition:filter .3s ease;
+}
+.collab-card:hover img{filter:grayscale(0) brightness(1) opacity(1);}
+.collab-empty{color:var(--muted-2);font-size:14.5px;font-family:var(--mono);grid-column:1/-1;text-align:center;padding:20px 0;}
+
 /* ---------- FINAL CTA ---------- */
 .final-cta{text-align:center;}
 .final-cta h2{font-family:var(--display);font-size:clamp(32px,5vw,56px);font-weight:600;letter-spacing:-1px;max-width:16ch;margin:0 auto;text-shadow:var(--text-depth);}
@@ -658,6 +701,28 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
   </div>
 </section>
 
+<section class="section" id="collaborations">
+
+<div class="wrap">
+
+<div class="section-head reveal-l">
+
+<p class="section-eyebrow">Who we've worked with</p>
+
+<h2>Trusted collaborations.</h2>
+
+</div>
+
+<div class="collab-grid reveal" id="collabGrid">
+
+<p class="collab-empty">Loading collaborations…</p>
+
+</div>
+
+</div>
+
+</section>
+
 <section class="section" id="proof">
   <div class="wrap">
     <div class="proof reveal-r">
@@ -670,6 +735,42 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
       <p class="proof-attr"><b>Real client, name &amp; business added with permission</b> — case study detail to be finalized before launch.</p>
     </div>
   </div>
+</section>
+
+<section class="section" id="founder">
+
+<div class="wrap">
+
+<div class="section-head reveal-l">
+
+<p class="section-eyebrow">Behind Aplus</p>
+
+<h2>Meet the founder.</h2>
+
+</div>
+
+<div class="founder-card reveal-r tilt-3d">
+
+<div class="founder-photo-wrap">
+
+<img src="founder.jpg" alt="Kata Revanraj, Founder of Aplus Tech Services" class="founder-photo">
+
+</div>
+
+<div class="founder-info">
+
+<h3>Kata Revanraj</h3>
+
+<p class="founder-role">Founder, Aplus Tech Services &amp; IT Solutions</p>
+
+<p class="founder-bio">Digital marketing today isn't about being the loudest brand online — it's about showing up exactly where your customers are already looking. I started Aplus to close the gap between marketing that just looks good and marketing that actually moves the needle: real search rankings, real ad returns, real leads. On the IT side, that same principle carries over — software built around how a business actually runs, not a generic template. From India to the USA, UAE and Canada, the goal stays the same: measurable growth, not vanity metrics.</p>
+
+</div>
+
+</div>
+
+</div>
+
 </section>
 
 <section class="section final-cta" id="contact">
@@ -824,7 +925,54 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 
-  /* ---------- Nav scroll state ---------- */
+  /* ---------- Collaborations grid ---------- */
+(async function loadCollaborations(){
+
+const grid = document.getElementById('collabGrid');
+
+if(!grid) return;
+
+const { data, error } = await supabaseClient
+
+.from('collaborators')
+
+.select('*')
+
+.order('sort_order', { ascending: true })
+
+.order('created_at', { ascending: true });
+
+if(error){
+
+console.error('Collaborators load error:', error);
+
+grid.innerHTML = '<p class="collab-empty">Unable to load collaborations right now.</p>';
+
+return;
+
+}
+
+if(!data || data.length === 0){
+
+grid.innerHTML = '<p class="collab-empty">New collaborations coming soon.</p>';
+
+return;
+
+}
+
+grid.innerHTML = data.map(c => `
+
+<a class="collab-card tilt-3d" href="${c.website_url}" target="_blank" rel="noopener noreferrer" title="${c.name}">
+
+<img src="${c.logo_url}" alt="${c.name} logo" loading="lazy">
+
+</a>
+
+`).join('');
+
+})();
+
+/* ---------- Nav scroll state ---------- */
   const header = document.getElementById('siteHeader');
   window.addEventListener('scroll', ()=>{
     header.classList.toggle('scrolled', window.scrollY > 40);
