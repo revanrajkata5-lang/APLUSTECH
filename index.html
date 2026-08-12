@@ -329,7 +329,6 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
   box-shadow:0 1px 0 rgba(255,255,255,0.07) inset, 0 14px 30px -16px rgba(0,0,0,0.5);
 }
 .calc-result-label{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
-.calc-result-num{font-family:var(--mono);font-weight:500;font-size:clamp(32px,4vw,46px);color:var(--highlight);margin:16px 0;transition:all .3s ease;text-shadow:var(--text-glow);}
 .calc-result-note{font-size:13px;color:var(--muted-2);margin-bottom:24px;}
 
 /* ---------- CONTACT FORM ---------- */
@@ -645,9 +644,9 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 <section class="section" id="calculator">
   <div class="wrap">
     <div class="section-head reveal-r">
-      <p class="section-eyebrow">No "contact us for pricing"</p>
-      <h2>Get an instant estimate.</h2>
-      <p>Pick what you need. See a real range immediately — no form, no wait.</p>
+      <p class="section-eyebrow">Build your package</p>
+      <h2>Tell us what you need.</h2>
+      <p>Pick what you need below, then request your exact quote — we'll follow up within a day.</p>
     </div>
     <div class="calc">
       <div class="reveal-l">
@@ -656,30 +655,29 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
         <div id="calcOptions">
           <div class="calc-opt" data-price="450" data-name="Website">
             <div class="calc-opt-label"><span class="checkbox"></span> Website Design &amp; Development</div>
-            <span class="calc-opt-price">from $450</span>
+            <span class="calc-opt-price">Request Quote</span>
           </div>
           <div class="calc-opt" data-price="300" data-name="SEO">
             <div class="calc-opt-label"><span class="checkbox"></span> SEO Services</div>
-            <span class="calc-opt-price">from $300/mo</span>
+            <span class="calc-opt-price">Request Quote</span>
           </div>
           <div class="calc-opt" data-price="350" data-name="Ads">
             <div class="calc-opt-label"><span class="checkbox"></span> Meta / Google Ads Management</div>
-            <span class="calc-opt-price">from $350/mo</span>
+            <span class="calc-opt-price">Request Quote</span>
           </div>
           <div class="calc-opt" data-price="800" data-name="App">
             <div class="calc-opt-label"><span class="checkbox"></span> App Development</div>
-            <span class="calc-opt-price">from $800</span>
+            <span class="calc-opt-price">Request Quote</span>
           </div>
           <div class="calc-opt" data-price="600" data-name="Software">
             <div class="calc-opt-label"><span class="checkbox"></span> Billing / Custom Software</div>
-            <span class="calc-opt-price">from $600</span>
+            <span class="calc-opt-price">Request Quote</span>
           </div>
         </div>
       </div>
       <div class="calc-result reveal-r tilt-3d">
-        <p class="calc-result-label">Estimated Range</p>
-        <div class="calc-result-num" id="calcResult">$0</div>
-        <p class="calc-result-note" id="calcNote">Select services to see your estimate</p>
+        <p class="calc-result-label">Your Selection</p>
+        <p class="calc-result-note" id="calcNote">Select services above, then request your exact quote</p>
         <a href="#contact" class="btn btn-primary" style="justify-content:center;">Request Exact Quote</a>
       </div>
     </div>
@@ -1119,25 +1117,17 @@ ScrollTrigger.refresh();
 
   /* ---------- Quote calculator ---------- */
   const opts = document.querySelectorAll('.calc-opt');
-  const resultEl = document.getElementById('calcResult');
   const noteEl = document.getElementById('calcNote');
-  let total = 0;
   opts.forEach(opt=>{
     opt.addEventListener('click', ()=>{
       opt.classList.toggle('active');
-      total = 0;
       let names = [];
       opts.forEach(o=>{
         if(o.classList.contains('active')){
-          total += parseInt(o.dataset.price,10);
           names.push(o.dataset.name);
         }
       });
-      const low = total, high = Math.round(total*1.35);
-      gsap.to({}, {duration:0.3, onUpdate:function(){
-        resultEl.textContent = total === 0 ? '$0' : `$${low.toLocaleString()}–$${high.toLocaleString()}`;
-      }});
-      noteEl.textContent = names.length ? names.join(' + ') : 'Select services to see your estimate';
+      noteEl.textContent = names.length ? `Selected: ${names.join(' + ')}` : 'Select services above, then request your exact quote';
     });
   });
 
