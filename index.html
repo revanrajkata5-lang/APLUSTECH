@@ -878,6 +878,26 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 document.addEventListener('DOMContentLoaded', function(){
   gsap.registerPlugin(ScrollTrigger);
 
+/* Mobile browsers resize the viewport (address bar hide/show) as you
+
+scroll — by default that fires a resize event and ScrollTrigger
+
+recalculates every trigger's position mid-scroll, which is what
+
+breaks/kills animations on phones. This tells it to ignore those
+
+resize events on mobile so trigger points stay stable. */
+
+ScrollTrigger.config({ ignoreMobileResize: true });
+
+/* Images (founder photo, collab logos, etc.) can finish loading
+
+after ScrollTrigger has already measured the page — refresh once
+
+everything is fully loaded so trigger positions match final layout. */
+
+window.addEventListener('load', () => ScrollTrigger.refresh());
+
   /* ---------- Contact form submission ---------- */
   const contactForm = document.getElementById('contactForm');
   const cfSubmitBtn = document.getElementById('cfSubmitBtn');
@@ -946,6 +966,8 @@ console.error('Collaborators load error:', error);
 
 grid.innerHTML = '<p class="collab-empty">Unable to load collaborations right now.</p>';
 
+ScrollTrigger.refresh();
+
 return;
 
 }
@@ -953,6 +975,8 @@ return;
 if(!data || data.length === 0){
 
 grid.innerHTML = '<p class="collab-empty">New collaborations coming soon.</p>';
+
+ScrollTrigger.refresh();
 
 return;
 
@@ -967,6 +991,8 @@ grid.innerHTML = data.map(c => `
 </a>
 
 `).join('');
+
+ScrollTrigger.refresh();
 
 })();
 
