@@ -472,6 +472,45 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 /* skeleton loader demo */
 .skeleton{background:linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;border-radius:8px;}
 @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* ---------- CAREERS ---------- */
+.careers-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+@media (max-width:768px){.careers-grid{grid-template-columns:1fr;}}
+.careers-empty{color:var(--muted);font-size:15px;}
+.job-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:28px 26px;box-shadow:var(--shadow-card);
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.job-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover);}
+.job-title{font-family:var(--display);font-size:19px;font-weight:600;}
+.job-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.job-tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--violet);background:rgba(126,160,240,0.14);padding:5px 10px;border-radius:100px;
+}
+.job-desc{color:var(--muted);font-size:14.5px;margin-top:16px;}
+.job-apply-btn{margin-top:22px;padding:12px 24px;font-size:14px;}
+
+/* ---------- APPLICATION MODAL ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(3,7,30,0.72);backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:32px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-card-hover);position:relative;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:26px;cursor:pointer;line-height:1;padding:6px;
+}
+.modal-close:hover{color:var(--text);}
+.modal-box h3{font-family:var(--display);font-size:22px;margin-bottom:6px;padding-right:24px;}
+.modal-sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
 </style>
 </head>
 <body>
@@ -489,6 +528,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
         <a href="#how">Process</a>
         <a href="#calculator">Pricing</a>
         <a href="#countries">Countries</a>
+        <a href="#careers">Careers</a>
         <a href="#contact" class="nav-cta">Get a Quote</a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
@@ -771,6 +811,19 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 
 </section>
 
+<section class="section" id="careers">
+  <div class="wrap">
+    <div class="section-head reveal-l">
+      <p class="section-eyebrow">Join the team</p>
+      <h2>Open positions.</h2>
+      <p>We're hiring across marketing and IT. Don't see a role that fits? Reach out via the contact form below anyway.</p>
+    </div>
+    <div class="careers-grid reveal" id="careersGrid">
+      <p class="careers-empty">Loading open positions…</p>
+    </div>
+  </div>
+</section>
+
 <section class="section final-cta" id="contact">
   <div class="wrap">
     <h2 class="reveal-l" style="margin:0 auto;">Ready to grow, or ready to build?</h2>
@@ -862,6 +915,44 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 
 <div class="whatsapp-fab" id="waFab" role="button" aria-label="Chat on WhatsApp">
   <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.6 6.32A8.86 8.86 0 0012.05 4a8.94 8.94 0 00-7.75 13.4L3 21l3.7-1.25a8.9 8.9 0 004.35 1.13h0a8.94 8.94 0 008.93-8.94 8.86 8.86 0 00-2.38-6.62zM12.05 19.4h0a7.44 7.44 0 01-3.8-1.04l-.27-.16-2.83.93.9-2.76-.18-.28a7.42 7.42 0 01-1.15-3.98 7.45 7.45 0 0112.72-5.27 7.4 7.4 0 012.18 5.27 7.45 7.45 0 01-7.57 7.29zm4.08-5.58c-.22-.11-1.32-.65-1.53-.72s-.35-.11-.5.11-.58.72-.71.87-.26.16-.48.05a6.1 6.1 0 01-1.8-1.11 6.75 6.75 0 01-1.25-1.55c-.13-.22 0-.34.1-.45s.22-.26.33-.4a1.5 1.5 0 00.22-.36.4.4 0 000-.38c-.05-.11-.5-1.2-.68-1.64s-.36-.38-.5-.38h-.43a.82.82 0 00-.6.28 2.5 2.5 0 00-.78 1.86 4.34 4.34 0 00.91 2.3 9.94 9.94 0 003.8 3.36c.53.23.94.36 1.26.47a3 3 0 001.4.09 2.3 2.3 0 001.5-1.06 1.87 1.87 0 00.13-1.06c-.05-.1-.2-.16-.42-.27z"/></svg>
+</div>
+
+<!-- ---------- Job application modal ---------- -->
+<div class="modal-overlay" id="jobModalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="jobModalClose" aria-label="Close">&times;</button>
+    <h3 id="jobModalTitle">Apply</h3>
+    <p class="modal-sub" id="jobModalSub">Tell us a bit about yourself and we'll get back to you.</p>
+    <form id="jobApplyForm">
+      <input type="hidden" id="ja-job-id">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="ja-name">Name</label>
+          <input type="text" id="ja-name" name="name" required autocomplete="name">
+        </div>
+        <div class="form-field">
+          <label for="ja-email">Email</label>
+          <input type="email" id="ja-email" name="email" required autocomplete="email">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label for="ja-phone">Phone (optional)</label>
+          <input type="tel" id="ja-phone" name="phone" autocomplete="tel">
+        </div>
+        <div class="form-field">
+          <label for="ja-resume">Resume link (optional)</label>
+          <input type="url" id="ja-resume" name="resume" placeholder="Google Drive / LinkedIn link">
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="ja-cover">Cover note (optional)</label>
+        <textarea id="ja-cover" name="cover" placeholder="Why you're a fit for this role..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary form-submit-btn" id="jaSubmitBtn">Submit Application</button>
+      <p class="form-status" id="jaStatus"></p>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -993,6 +1084,126 @@ grid.innerHTML = data.map(c => `
 ScrollTrigger.refresh();
 
 })();
+
+/* ---------- Careers: load open jobs ---------- */
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+(async function loadJobs(){
+  const grid = document.getElementById('careersGrid');
+  if(!grid) return;
+
+  const { data, error } = await supabaseClient
+    .from('jobs')
+    .select('*')
+    .eq('status', 'open')
+    .order('created_at', { ascending: false });
+
+  if(error){
+    console.error('Jobs load error:', error);
+    grid.innerHTML = '<p class="careers-empty">Unable to load open positions right now.</p>';
+    ScrollTrigger.refresh();
+    return;
+  }
+
+  if(!data || data.length === 0){
+    grid.innerHTML = '<p class="careers-empty">No open positions right now — check back soon.</p>';
+    ScrollTrigger.refresh();
+    return;
+  }
+
+  grid.innerHTML = data.map(j => `
+    <div class="job-card tilt-3d">
+      <div class="job-title">${escapeHtml(j.title)}</div>
+      <div class="job-tags">
+        ${j.department ? `<span class="job-tag">${escapeHtml(j.department)}</span>` : ''}
+        ${j.location ? `<span class="job-tag">${escapeHtml(j.location)}</span>` : ''}
+        ${j.job_type ? `<span class="job-tag">${escapeHtml(j.job_type)}</span>` : ''}
+      </div>
+      <p class="job-desc">${escapeHtml(j.description)}</p>
+      <button class="btn btn-primary job-apply-btn" data-job-id="${j.id}" data-job-title="${escapeHtml(j.title)}">Apply Now</button>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.job-apply-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> openJobModal(btn.dataset.jobId, btn.dataset.jobTitle));
+  });
+
+  ScrollTrigger.refresh();
+})();
+
+/* ---------- Job application modal ---------- */
+const jobModalOverlay = document.getElementById('jobModalOverlay');
+const jobModalTitle = document.getElementById('jobModalTitle');
+const jaJobId = document.getElementById('ja-job-id');
+const jobApplyForm = document.getElementById('jobApplyForm');
+const jaSubmitBtn = document.getElementById('jaSubmitBtn');
+const jaStatus = document.getElementById('jaStatus');
+
+function openJobModal(jobId, jobTitle){
+  jaJobId.value = jobId;
+  jobModalTitle.textContent = `Apply — ${jobTitle}`;
+  jaStatus.textContent = '';
+  jaStatus.className = 'form-status';
+  jobModalOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeJobModal(){
+  jobModalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+  jobApplyForm.reset();
+}
+if(jobModalOverlay){
+  document.getElementById('jobModalClose').addEventListener('click', closeJobModal);
+  jobModalOverlay.addEventListener('click', (e)=>{ if(e.target === jobModalOverlay) closeJobModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && jobModalOverlay.classList.contains('open')) closeJobModal(); });
+}
+
+if(jobApplyForm){
+  jobApplyForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    jaStatus.textContent = '';
+    jaStatus.className = 'form-status';
+
+    const job_id = jaJobId.value;
+    const name = document.getElementById('ja-name').value.trim();
+    const email = document.getElementById('ja-email').value.trim();
+    const phone = document.getElementById('ja-phone').value.trim();
+    const resume_url = document.getElementById('ja-resume').value.trim();
+    const cover_letter = document.getElementById('ja-cover').value.trim();
+
+    if(!name || !email){
+      jaStatus.textContent = 'Please fill in your name and email.';
+      jaStatus.className = 'form-status error';
+      return;
+    }
+
+    jaSubmitBtn.disabled = true;
+    jaSubmitBtn.textContent = 'Sending...';
+
+    const { error } = await supabaseClient.from('job_applications').insert({
+      job_id,
+      name, email,
+      phone: phone || null,
+      resume_url: resume_url || null,
+      cover_letter: cover_letter || null
+    });
+
+    jaSubmitBtn.disabled = false;
+    jaSubmitBtn.textContent = 'Submit Application';
+
+    if(error){
+      console.error('Application submit error:', error);
+      jaStatus.textContent = 'Something went wrong. Please try again or email us directly.';
+      jaStatus.className = 'form-status error';
+    } else {
+      jaStatus.textContent = "Application received — we'll be in touch!";
+      jaStatus.className = 'form-status success';
+      setTimeout(closeJobModal, 1800);
+    }
+  });
+}
 
 /* ---------- Nav scroll state ---------- */
   const header = document.getElementById('siteHeader');
