@@ -38,6 +38,22 @@ h1{font-family:var(--display);font-size:26px;font-weight:700;margin-bottom:8px;}
 }
 .field input:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(126,160,240,0.18);}
 .field input[type="file"]{padding:10px;font-size:13px;color:var(--muted);}
+.field select,.field textarea{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-family:var(--body);font-size:15px;
+}
+.field select:focus,.field textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(126,160,240,0.18);}
+.field textarea{resize:vertical;min-height:80px;}
+.status-select{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:6px 10px;color:var(--text);font-family:var(--mono);font-size:12px;
+}
+.job-badge{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:100px;display:inline-block;margin-right:8px;
+}
+.job-badge.open{background:rgba(126,224,160,0.15);color:#7EE0A0;}
+.job-badge.closed{background:rgba(183,196,234,0.12);color:var(--muted);}
 .btn{
   width:100%;padding:14px;border-radius:100px;font-weight:600;font-size:15px;
   background:var(--teal);color:#FDFDFD;border:none;cursor:pointer;
@@ -131,6 +147,7 @@ h1{font-family:var(--display);font-size:26px;font-weight:700;margin-bottom:8px;}
   <div class="tabs">
     <button class="tab-btn active" data-tab="collabTab">Collaborations</button>
     <button class="tab-btn" data-tab="leadsTab">Consultation Requests <span class="tab-count" id="leadsCount"></span></button>
+    <button class="tab-btn" data-tab="careersTab">Careers <span class="tab-count" id="jobsCount"></span></button>
   </div>
 
   <div class="card tab-panel" id="collabTab">
@@ -164,6 +181,73 @@ h1{font-family:var(--display);font-size:26px;font-weight:700;margin-bottom:8px;}
       <p class="empty-note">Loading…</p>
     </div>
   </div>
+
+  <div class="tab-panel" id="careersTab" style="display:none;">
+    <div class="card" style="margin-bottom:20px;">
+      <h1 style="font-size:19px;margin-bottom:4px;" id="jobFormHeading">Post a job</h1>
+      <p class="sub" style="margin-bottom:20px;">Publish a role to the Careers section on the site.</p>
+      <form id="jobForm">
+        <input type="hidden" id="jobId">
+        <div class="field">
+          <label for="jobTitle">Job title</label>
+          <input type="text" id="jobTitle" required placeholder="e.g. SEO Executive">
+        </div>
+        <div class="field">
+          <label for="jobDepartment">Department</label>
+          <input type="text" id="jobDepartment" placeholder="e.g. Marketing">
+        </div>
+        <div class="field">
+          <label for="jobLocation">Location</label>
+          <input type="text" id="jobLocation" placeholder="e.g. Hyderabad / Remote">
+        </div>
+        <div class="field">
+          <label for="jobType">Job type</label>
+          <select id="jobType">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Internship">Internship</option>
+            <option value="Contract">Contract</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="jobDescription">Description</label>
+          <textarea id="jobDescription" rows="4" placeholder="Role summary, responsibilities, requirements..."></textarea>
+        </div>
+        <div class="field">
+          <label for="jobStatus">Status</label>
+          <select id="jobStatus">
+            <option value="open">Open (visible on site)</option>
+            <option value="closed">Closed (hidden)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn" id="jobSaveBtn">Post Job</button>
+        <button type="button" class="btn btn-secondary" id="jobCancelBtn" style="display:none;margin-top:10px;">Cancel Edit</button>
+        <p class="status" id="jobFormStatus"></p>
+      </form>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h1 style="font-size:16px;margin-bottom:16px;">All jobs</h1>
+      <div class="list" id="jobsList">
+        <p class="empty-note">Loading…</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 style="font-size:16px;margin-bottom:6px;">Applications</h1>
+      <p class="sub" style="margin-bottom:16px;">People who applied through the Careers section.</p>
+      <div class="field" style="max-width:320px;">
+        <label for="appJobFilter">Filter by job</label>
+        <select id="appJobFilter">
+          <option value="">All jobs</option>
+        </select>
+      </div>
+      <div class="list" id="appsList" style="margin-top:16px;">
+        <p class="empty-note">Loading…</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -188,6 +272,12 @@ function showDashboard(){
   dashboardView.style.display = 'block';
   loadCollaborators();
   loadLeads();
+  loadJobs();
+  loadApplications();
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 // Tab switching
@@ -406,6 +496,216 @@ uploadForm.addEventListener('submit', async (e) => {
   uploadForm.reset();
   loadCollaborators();
 });
+
+/* ---------- Careers: jobs ---------- */
+const jobForm = document.getElementById('jobForm');
+const jobIdField = document.getElementById('jobId');
+const jobFormHeading = document.getElementById('jobFormHeading');
+const jobSaveBtn = document.getElementById('jobSaveBtn');
+const jobCancelBtn = document.getElementById('jobCancelBtn');
+const jobFormStatus = document.getElementById('jobFormStatus');
+const jobsList = document.getElementById('jobsList');
+const jobsCount = document.getElementById('jobsCount');
+const appJobFilter = document.getElementById('appJobFilter');
+const appsList = document.getElementById('appsList');
+
+let cachedJobs = [];
+
+function resetJobForm(){
+  jobIdField.value = '';
+  jobForm.reset();
+  jobFormHeading.textContent = 'Post a job';
+  jobSaveBtn.textContent = 'Post Job';
+  jobCancelBtn.style.display = 'none';
+}
+jobCancelBtn.addEventListener('click', resetJobForm);
+
+jobForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  jobFormStatus.textContent = '';
+  jobFormStatus.className = 'status';
+
+  const payload = {
+    title: document.getElementById('jobTitle').value.trim(),
+    department: document.getElementById('jobDepartment').value.trim() || null,
+    location: document.getElementById('jobLocation').value.trim() || null,
+    job_type: document.getElementById('jobType').value,
+    description: document.getElementById('jobDescription').value.trim() || null,
+    status: document.getElementById('jobStatus').value
+  };
+
+  if(!payload.title){
+    jobFormStatus.textContent = 'Job title is required.';
+    jobFormStatus.className = 'status error';
+    return;
+  }
+
+  jobSaveBtn.disabled = true;
+  jobSaveBtn.textContent = 'Saving…';
+
+  const id = jobIdField.value;
+  const { error } = id
+    ? await supabaseClient.from('jobs').update(payload).eq('id', id)
+    : await supabaseClient.from('jobs').insert(payload);
+
+  jobSaveBtn.disabled = false;
+  jobSaveBtn.textContent = id ? 'Update Job' : 'Post Job';
+
+  if(error){
+    jobFormStatus.textContent = 'Could not save job: ' + error.message;
+    jobFormStatus.className = 'status error';
+    return;
+  }
+
+  jobFormStatus.textContent = id ? 'Job updated.' : 'Job posted.';
+  jobFormStatus.className = 'status success';
+  resetJobForm();
+  loadJobs();
+});
+
+function editJob(job){
+  jobIdField.value = job.id;
+  document.getElementById('jobTitle').value = job.title || '';
+  document.getElementById('jobDepartment').value = job.department || '';
+  document.getElementById('jobLocation').value = job.location || '';
+  document.getElementById('jobType').value = job.job_type || 'Full-time';
+  document.getElementById('jobDescription').value = job.description || '';
+  document.getElementById('jobStatus').value = job.status || 'open';
+  jobFormHeading.textContent = 'Edit job';
+  jobSaveBtn.textContent = 'Update Job';
+  jobCancelBtn.style.display = 'inline-block';
+  jobForm.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+async function toggleJobStatus(job){
+  const newStatus = job.status === 'open' ? 'closed' : 'open';
+  const { error } = await supabaseClient.from('jobs').update({ status: newStatus }).eq('id', job.id);
+  if(error){ alert('Could not update status: ' + error.message); return; }
+  loadJobs();
+}
+
+async function deleteJob(job){
+  if(!confirm(`Delete "${job.title}"? This also removes its applications.`)) return;
+  const { error } = await supabaseClient.from('jobs').delete().eq('id', job.id);
+  if(error){ alert('Could not delete job: ' + error.message); return; }
+  loadJobs();
+  loadApplications();
+}
+
+async function loadJobs(){
+  jobsList.innerHTML = '<p class="empty-note">Loading…</p>';
+
+  const { data, error } = await supabaseClient
+    .from('jobs')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if(error){
+    jobsList.innerHTML = '<p class="empty-note">Could not load jobs.</p>';
+    console.error(error);
+    return;
+  }
+
+  cachedJobs = data || [];
+  jobsCount.textContent = cachedJobs.filter(j => j.status === 'open').length || '';
+
+  appJobFilter.innerHTML = '<option value="">All jobs</option>' +
+    cachedJobs.map(j => `<option value="${j.id}">${escapeHtml(j.title)}</option>`).join('');
+
+  if(cachedJobs.length === 0){
+    jobsList.innerHTML = '<p class="empty-note">No jobs posted yet.</p>';
+    return;
+  }
+
+  jobsList.innerHTML = cachedJobs.map(j => `
+    <div class="lead-item" data-id="${j.id}">
+      <div class="lead-top">
+        <span class="lead-name">${escapeHtml(j.title)}</span>
+        <span class="job-badge ${j.status === 'open' ? 'open' : 'closed'}">${j.status}</span>
+      </div>
+      <div class="lead-meta">
+        <span>${[j.department, j.location, j.job_type].filter(Boolean).map(escapeHtml).join(' · ')}</span>
+      </div>
+      ${j.description ? `<p class="lead-message">${escapeHtml(j.description)}</p>` : ''}
+      <div class="lead-actions" style="gap:8px;">
+        <button class="btn-secondary del-btn" data-action="edit" data-id="${j.id}" style="background:rgba(126,160,240,0.12);border:1px solid rgba(126,160,240,0.3);color:var(--violet);">Edit</button>
+        <button class="btn-secondary del-btn" data-action="toggle" data-id="${j.id}" style="background:rgba(255,205,66,0.12);border:1px solid rgba(255,205,66,0.3);color:var(--highlight);">${j.status === 'open' ? 'Close' : 'Reopen'}</button>
+        <button class="del-btn" data-action="delete" data-id="${j.id}">Delete</button>
+      </div>
+    </div>
+  `).join('');
+
+  jobsList.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const job = cachedJobs.find(j => j.id === btn.dataset.id);
+      if(!job) return;
+      if(btn.dataset.action === 'edit') editJob(job);
+      if(btn.dataset.action === 'toggle') toggleJobStatus(job);
+      if(btn.dataset.action === 'delete') deleteJob(job);
+    });
+  });
+}
+
+/* ---------- Careers: applications ---------- */
+async function loadApplications(){
+  appsList.innerHTML = '<p class="empty-note">Loading…</p>';
+
+  let query = supabaseClient
+    .from('job_applications')
+    .select('*, jobs(title)')
+    .order('created_at', { ascending: false });
+
+  const filterId = appJobFilter.value;
+  if(filterId) query = query.eq('job_id', filterId);
+
+  const { data, error } = await query;
+
+  if(error){
+    appsList.innerHTML = '<p class="empty-note">Could not load applications.</p>';
+    console.error(error);
+    return;
+  }
+
+  if(!data || data.length === 0){
+    appsList.innerHTML = '<p class="empty-note">No applications yet.</p>';
+    return;
+  }
+
+  appsList.innerHTML = data.map(a => `
+    <div class="lead-item" data-id="${a.id}">
+      <div class="lead-top">
+        <span class="lead-name">${escapeHtml(a.name)} <span style="color:var(--violet);font-weight:400;">→ ${escapeHtml(a.jobs?.title || 'Unknown role')}</span></span>
+        <span class="lead-time">${formatLeadDate(a.created_at)}</span>
+      </div>
+      <div class="lead-meta">
+        <a href="mailto:${escapeHtml(a.email)}">${escapeHtml(a.email)}</a>
+        ${a.phone ? `<span>${escapeHtml(a.phone)}</span>` : ''}
+        ${a.resume_url ? `<a href="${escapeHtml(a.resume_url)}" target="_blank" rel="noopener noreferrer">Resume</a>` : ''}
+      </div>
+      ${a.cover_letter ? `<p class="lead-message">${escapeHtml(a.cover_letter)}</p>` : ''}
+      <div class="lead-actions">
+        <select class="status-select app-status-select" data-id="${a.id}">
+          <option value="new" ${a.status === 'new' ? 'selected' : ''}>New</option>
+          <option value="reviewed" ${a.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
+          <option value="shortlisted" ${a.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
+          <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+        </select>
+      </div>
+    </div>
+  `).join('');
+
+  appsList.querySelectorAll('.app-status-select').forEach(sel => {
+    sel.addEventListener('change', async () => {
+      const { error } = await supabaseClient
+        .from('job_applications')
+        .update({ status: sel.value })
+        .eq('id', sel.dataset.id);
+      if(error) alert('Could not update status: ' + error.message);
+    });
+  });
+}
+
+appJobFilter.addEventListener('change', loadApplications);
 </script>
 </body>
 </html>
