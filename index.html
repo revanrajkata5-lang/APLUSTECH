@@ -2,15 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Aplus Tech Services — Marketing &amp; IT Solutions | India · USA · UAE · Canada</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A+ Tech Services — Marketing & IT Solutions</title>
+<meta name="description" content="A+ Tech Services delivers marketing services and IT solutions: SEO, ads, web and app development, billing software and geofencing.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+
 :root{
   --bg:#031B6B;
   --surface:#0A2680;
@@ -539,9 +538,32 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 .modal-close:hover{color:var(--text);}
 .modal-box h3{font-family:var(--display);font-size:22px;margin-bottom:6px;padding-right:24px;}
 .modal-sub{color:var(--muted);font-size:14px;margin-bottom:22px;}
+
+.pillar-desc{color:var(--muted);font-size:15px;line-height:1.7;margin:-4px 0 18px;max-width:46ch;}
+
+/* ---------- Expandable pillar list items ---------- */
+.pillar-list li.pillar-item{display:block;padding:0;}
+.pillar-item details{padding:0;}
+.pillar-item summary{
+  list-style:none;cursor:pointer;padding:12px 0;display:flex;
+  justify-content:space-between;align-items:center;gap:12px;
+  color:var(--muted);font-size:15px;transition:color .25s ease;
+}
+.pillar-item summary::-webkit-details-marker{display:none;}
+.pillar-item summary:hover{color:var(--text);}
+.pillar-item summary span{transition:transform .3s ease;}
+.pillar-item details[open] summary{color:var(--text);}
+.pillar-item details[open] summary span{transform:rotate(90deg);}
+.pillar-item-desc{
+  color:var(--muted-2);font-size:14px;line-height:1.7;
+  padding:0 0 14px;max-width:52ch;animation:pillarItemIn .3s ease;
+}
+@keyframes pillarItemIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+
 </style>
 </head>
 <body>
+
 
 <canvas id="hero-canvas" aria-hidden="true"></canvas>
 
@@ -601,22 +623,24 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
       <div class="pillar marketing reveal-l tilt-3d">
         <p class="pillar-tag">Get Found</p>
         <h3>Marketing Services</h3>
+        <p class="pillar-desc">Everything that makes people find you and choose you — local visibility on Google, a website that converts, and paid campaigns that bring in qualified leads instead of empty clicks.</p>
         <ul class="pillar-list">
-          <li>Google Business Profile &amp; SEO <span>→</span></li>
-          <li>Website Design &amp; Development <span>→</span></li>
-          <li>Meta &amp; Google Ads Management <span>→</span></li>
-          <li>YouTube Ads &amp; Bulk SMS <span>→</span></li>
+          <li class="pillar-item"><details><summary>Google Business Profile &amp; SEO <span>→</span></summary><p class="pillar-item-desc">We optimise and manage your Google Business Profile and on-page SEO so your business shows up in local map results and organic search when customers are actively looking for you.</p></details></li>
+          <li class="pillar-item"><details><summary>Website Design &amp; Development <span>→</span></summary><p class="pillar-item-desc">Fast, mobile-first websites built to convert — clear structure, strong copy placement, and technical SEO baked in from day one.</p></details></li>
+          <li class="pillar-item"><details><summary>Meta &amp; Google Ads Management <span>→</span></summary><p class="pillar-item-desc">Campaigns planned, launched and tuned weekly — audience targeting, creatives, landing pages and budget control aimed at qualified leads, not vanity clicks.</p></details></li>
+          <li class="pillar-item"><details><summary>YouTube Ads &amp; Bulk SMS <span>→</span></summary><p class="pillar-item-desc">Video campaigns that put your brand in front of the right viewers, plus high-open-rate bulk SMS for offers, reminders and re-engagement.</p></details></li>
         </ul>
         <a href="#calculator" class="pillar-arrow">Explore Marketing <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
       <div class="pillar it reveal-r tilt-3d">
         <p class="pillar-tag">Get Built</p>
         <h3>IT Solutions</h3>
+        <p class="pillar-desc">Custom software built around how your business actually works — mobile apps, billing and operations systems, geofencing and WhatsApp automation, delivered and supported end to end.</p>
         <ul class="pillar-list">
-          <li>App Development (Android/iOS) <span>→</span></li>
-          <li>Billing &amp; Custom Software <span>→</span></li>
-          <li>Geofencing Solutions <span>→</span></li>
-          <li>WhatsApp Business Automation <span>→</span></li>
+          <li class="pillar-item"><details><summary>App Development (Android/iOS) <span>→</span></summary><p class="pillar-item-desc">Native and cross-platform mobile apps designed, built, published and maintained — from first wireframe to store listing and updates.</p></details></li>
+          <li class="pillar-item"><details><summary>Billing &amp; Custom Software <span>→</span></summary><p class="pillar-item-desc">Billing, inventory, CRM and operations software shaped around how your team actually works, with reporting and role-based access.</p></details></li>
+          <li class="pillar-item"><details><summary>Geofencing Solutions <span>→</span></summary><p class="pillar-item-desc">Location-based tracking, attendance and alerts — define virtual boundaries and trigger actions when your teams or assets enter or leave them.</p></details></li>
+          <li class="pillar-item"><details><summary>WhatsApp Business Automation <span>→</span></summary><p class="pillar-item-desc">Automated WhatsApp replies, catalogues, order updates and broadcast campaigns via the official Business API, connected to your existing systems.</p></details></li>
         </ul>
         <a href="#calculator" class="pillar-arrow">Explore IT Solutions <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
@@ -1013,7 +1037,14 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
   </div>
 </div>
 
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
 /* ---------- Supabase config ----------
    The anon/public key is safe to expose in frontend code — it can
    only do what the table's Row Level Security policies allow
@@ -1595,6 +1626,7 @@ if(jobApplyForm){
     window.open('https://wa.me/919014103262', '_blank');
   });
 });
+
 </script>
 </body>
 </html>
