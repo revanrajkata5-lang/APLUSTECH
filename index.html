@@ -385,11 +385,15 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
 .proof-attr b{color:var(--text);}
 
 /* ---------- FOUNDER ---------- */
+.founder-name-highlight{
+color:var(--highlight);text-shadow:var(--text-glow);
+}
 .founder-card{
 display:flex;align-items:center;gap:48px;
 background:var(--surface);border:1px solid var(--line);border-radius:20px;
 padding:48px;box-shadow:var(--shadow-card);
 }
+.founder-card--text{display:block;max-width:70ch;}
 @media (max-width:768px){
 .founder-card{flex-direction:column;text-align:center;padding:36px 24px;gap:28px;}
 }
@@ -408,6 +412,30 @@ font-family:var(--mono);font-size:12.5px;letter-spacing:1.5px;
 text-transform:uppercase;color:var(--highlight);margin-top:8px;
 }
 .founder-bio{color:var(--muted);font-size:15.5px;margin-top:16px;max-width:60ch;line-height:1.7;}
+.founder-quote{
+color:var(--text);font-size:18px;font-style:italic;line-height:1.6;
+margin-top:18px;max-width:60ch;
+border-left:2px solid var(--highlight);padding-left:18px;
+}
+.founder-card--text .founder-bio{margin-top:16px;}
+.founder-story-btn{margin-top:28px;}
+@media (max-width:768px){
+.founder-quote{border-left:none;padding-left:0;border-top:2px solid var(--highlight);padding-top:14px;}
+}
+
+/* ---------- FOUNDER STORY MODAL ---------- */
+.founder-modal-box{max-width:680px;}
+.founder-modal-box h3{margin-top:4px;font-size:24px;}
+.founder-story-body{margin-top:22px;color:var(--muted);font-size:15.5px;line-height:1.75;}
+.founder-story-body p{margin-bottom:14px;}
+.founder-story-subhead{
+font-family:var(--display);color:var(--text);font-size:19px;
+margin-top:28px;margin-bottom:10px;
+}
+.founder-story-signoff{
+margin-top:24px;color:var(--text);font-style:normal;
+border-top:1px solid var(--line);padding-top:18px;
+}
 
 /* ---------- COLLABORATIONS ---------- */
 .collab-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
@@ -781,27 +809,23 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 
 <div class="section-head reveal-l">
 
-<p class="section-eyebrow">Behind Aplus</p>
+<p class="section-eyebrow">The person behind A+ Tech</p>
 
-<h2>Meet the founder.</h2>
-
-</div>
-
-<div class="founder-card reveal-r tilt-3d">
-
-<div class="founder-photo-wrap">
-
-<img src="founder.jpg" alt="Kata Revanraj, Founder of Aplus Tech Services" class="founder-photo">
+<h2>Meet <span class="founder-name-highlight">Arif Sayyed</span>.</h2>
 
 </div>
+
+<div class="founder-card founder-card--text reveal-r">
 
 <div class="founder-info">
 
-<h3>Kata Revanraj</h3>
+<h3><span class="founder-name-highlight">Arif Sayyed</span> — Founder &amp; Managing Director</h3>
 
-<p class="founder-role">Founder, Aplus Tech Services &amp; IT Solutions</p>
+<p class="founder-quote">"Technology should not simply make a business look better. It should make the business work better."</p>
 
-<p class="founder-bio">Digital marketing today isn't about being the loudest brand online — it's about showing up exactly where your customers are already looking. I started Aplus to close the gap between marketing that just looks good and marketing that actually moves the needle: real search rankings, real ad returns, real leads. On the IT side, that same principle carries over — software built around how a business actually runs, not a generic template. From India to the USA, UAE and Canada, the goal stays the same: measurable growth, not vanity metrics.</p>
+<p class="founder-bio">I founded A+ Tech with one simple idea: understand the business first, then build the technology around it.</p>
+
+<button type="button" class="btn btn-primary founder-story-btn" id="founderStoryBtn">Read the Founder's Story <span aria-hidden="true">→</span></button>
 
 </div>
 
@@ -810,6 +834,40 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 </div>
 
 </section>
+
+<!-- ---------- Founder's story modal ---------- -->
+<div class="modal-overlay" id="founderModalOverlay">
+  <div class="modal-box founder-modal-box">
+    <button class="modal-close" id="founderModalClose" aria-label="Close">&times;</button>
+    <p class="section-eyebrow">Meet the Founder</p>
+    <h3><span class="founder-name-highlight">Arif Sayyed</span></h3>
+    <p class="modal-sub">Founder &amp; Managing Director — A+ Tech Services and IT Solutions</p>
+
+    <div class="founder-story-body">
+      <p>I believe technology should not simply make a business look better — it should make the business work better.</p>
+      <p>That belief is at the heart of why I founded A+ Tech Services and IT Solutions.</p>
+      <p>My approach is simple: first understand the business, then understand the problem, and only then build the right solution.</p>
+      <p>Many businesses know they need a website, digital marketing, automation, software, or a stronger online presence. But the real challenge is understanding what they actually need and how technology can help them move forward.</p>
+      <p>That is where I want A+ Tech to make a difference.</p>
+      <p>We work at the intersection of technology, digital marketing and business growth, helping businesses identify problems, create practical solutions, strengthen their digital presence and build systems that can support their next stage of growth.</p>
+      <p>A+ Tech was built in India with a global mindset. Today, our vision is to work with businesses across India, the United Kingdom, United States, Canada and the UAE — and continue expanding our reach globally.</p>
+      <p>I don't see A+ Tech as just a service company.</p>
+      <p>I see it as a long-term technology and growth partner for businesses that want to think bigger.</p>
+      <p>My academic background in BBA, B.Com (Computer Applications) and MBA has given me a foundation in business, technology and management. But my strongest focus has always been understanding how businesses actually operate, where they struggle, and where the right technology can create an advantage.</p>
+
+      <h4 class="founder-story-subhead">My Vision</h4>
+      <p>To build A+ Tech into a trusted global technology and digital growth company that businesses can turn to not only when they need a service, but when they need to solve a problem, improve their operations and move towards something bigger.</p>
+      <p>We don't just build digital solutions.</p>
+      <p>We build solutions around businesses.</p>
+
+      <p class="founder-story-signoff">
+        — <span class="founder-name-highlight">Arif Sayyed</span><br>
+        Founder &amp; Managing Director<br>
+        A+ Tech Services and IT Solutions
+      </p>
+    </div>
+  </div>
+</div>
 
 <section class="section" id="careers">
   <div class="wrap">
@@ -1132,6 +1190,17 @@ function escapeHtml(str){
 
   ScrollTrigger.refresh();
 })();
+
+/* ---------- Founder's story modal ---------- */
+const founderModalOverlay = document.getElementById('founderModalOverlay');
+const founderStoryBtn = document.getElementById('founderStoryBtn');
+const founderModalClose = document.getElementById('founderModalClose');
+if(founderModalOverlay && founderStoryBtn){
+  founderStoryBtn.addEventListener('click', ()=> founderModalOverlay.classList.add('open'));
+  founderModalClose.addEventListener('click', ()=> founderModalOverlay.classList.remove('open'));
+  founderModalOverlay.addEventListener('click', (e)=>{ if(e.target === founderModalOverlay) founderModalOverlay.classList.remove('open'); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && founderModalOverlay.classList.contains('open')) founderModalOverlay.classList.remove('open'); });
+}
 
 /* ---------- Job application modal ---------- */
 const jobModalOverlay = document.getElementById('jobModalOverlay');
