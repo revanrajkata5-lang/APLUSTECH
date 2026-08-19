@@ -133,17 +133,45 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
   box-shadow:0 6px 16px -6px rgba(5,65,187,0.5);
 }
 .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(5,65,187,0.35);}
-.nav-toggle{display:none;background:none;border:none;color:var(--text);font-size:26px;cursor:pointer;}
+.nav-toggle{
+  display:none;background:none;border:none;cursor:pointer;
+  width:44px;height:44px;padding:0;position:relative;z-index:1001;
+  -webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+.nav-toggle span{
+  position:absolute;left:50%;top:50%;width:22px;height:2px;
+  background:var(--text);border-radius:2px;
+  transform:translate(-50%,-50%) translateY(-6px);
+  transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .25s ease;
+}
+.nav-toggle span:nth-child(2){transform:translate(-50%,-50%);}
+.nav-toggle span:nth-child(3){transform:translate(-50%,-50%) translateY(6px);}
+.nav-toggle.open span:nth-child(1){transform:translate(-50%,-50%) rotate(45deg);}
+.nav-toggle.open span:nth-child(2){opacity:0;}
+.nav-toggle.open span:nth-child(3){transform:translate(-50%,-50%) rotate(-45deg);}
+.nav-overlay{
+  position:fixed;inset:0;background:rgba(2,8,32,0.55);
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+  opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;
+  z-index:998;
+}
+.nav-overlay.open{opacity:1;visibility:visible;transition:opacity .35s ease;}
 @media (max-width:900px){
   .nav-links{
-    position:fixed;top:0;right:-100%;width:78%;max-width:340px;height:100vh;
+    position:fixed;top:0;right:-100%;width:78%;max-width:340px;height:100vh;height:100dvh;
     background:var(--surface);flex-direction:column;justify-content:center;
-    gap:28px;transition:right .4s ease;padding:40px;
+    gap:26px;transition:right .45s cubic-bezier(.4,0,.2,1);padding:40px;
+    z-index:999;overflow-y:auto;
   }
   .nav-links.open{right:0;box-shadow:-20px 0 60px rgba(0,0,0,0.45);}
+  .nav-links a{font-size:17px;}
   .nav-toggle{display:block;}
-  .nav-cta{display:none;}
+  .nav-links .nav-cta{
+    display:inline-flex;align-items:center;justify-content:center;
+    margin-top:8px;width:100%;text-align:center;
+  }
 }
+html.nav-open,body.nav-open{overflow:hidden;}
 
 /* ---------- HERO ---------- */
 .hero{
@@ -151,7 +179,7 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
   padding-top:120px;padding-bottom:60px;overflow:hidden;
 }
 @media (max-width:600px){
-  .hero{padding-top:96px;padding-bottom:48px;}
+  .hero{padding-top:96px;padding-bottom:48px;align-items:flex-start;}
   .scroll-cue{left:20px;bottom:24px;}
 }
 #hero-canvas{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;z-index:-1;opacity:0;transition:opacity 1.5s ease;pointer-events:none;}
@@ -387,6 +415,13 @@ header.scrolled .logo-img{height:36px;transition:height .3s ease;}
 .founder-name-highlight{
 color:var(--highlight);text-shadow:var(--text-glow);
 }
+a.founder-name-link{
+text-decoration:none;color:var(--highlight);cursor:pointer;
+transition:opacity .25s ease;
+}
+a.founder-name-link:hover,a.founder-name-link:focus-visible{
+opacity:.8;text-decoration:underline;text-underline-offset:3px;
+}
 .founder-card{
 display:flex;align-items:center;gap:48px;
 background:var(--surface);border:1px solid var(--line);border-radius:20px;
@@ -581,9 +616,12 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
         <a href="#careers">Careers</a>
         <a href="#contact" class="nav-cta">Get a Quote</a>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </nav>
   </div>
+  <div class="nav-overlay" id="navOverlay"></div>
 </header>
 
 <section class="hero" id="top">
@@ -835,7 +873,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 
 <p class="section-eyebrow">The person behind A+ Tech</p>
 
-<h2>Meet <span class="founder-name-highlight">Arif Sayyed</span>.</h2>
+<h2>Meet <a href="https://www.instagram.com/always_arif99?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" class="founder-name-highlight founder-name-link">Arif Sayyed</a>.</h2>
 
 </div>
 
@@ -843,7 +881,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
 
 <div class="founder-info">
 
-<h3><span class="founder-name-highlight">Arif Sayyed</span> — Founder &amp; Managing Director</h3>
+<h3><a href="https://www.instagram.com/always_arif99?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" class="founder-name-highlight founder-name-link">Arif Sayyed</a> — Founder &amp; Managing Director</h3>
 
 <p class="founder-quote">"Technology should not simply make a business look better. It should make the business work better."</p>
 
@@ -864,7 +902,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
   <div class="modal-box founder-modal-box">
     <button class="modal-close" id="founderModalClose" aria-label="Close">&times;</button>
     <p class="section-eyebrow">Meet the Founder</p>
-    <h3><span class="founder-name-highlight">Arif Sayyed</span></h3>
+    <h3><a href="https://www.instagram.com/always_arif99?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" class="founder-name-highlight founder-name-link">Arif Sayyed</a></h3>
     <p class="modal-sub">Founder &amp; Managing Director — A+ Tech Services and IT Solutions</p>
 
     <div class="founder-story-body">
@@ -885,7 +923,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;}
       <p>We build solutions around businesses.</p>
 
       <p class="founder-story-signoff">
-        — <span class="founder-name-highlight">Arif Sayyed</span><br>
+        — <a href="https://www.instagram.com/always_arif99?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" class="founder-name-highlight founder-name-link">Arif Sayyed</a><br>
         Founder &amp; Managing Director<br>
         A+ Tech Services and IT Solutions
       </p>
@@ -1307,13 +1345,42 @@ if(jobApplyForm){
 
 /* ---------- Nav scroll state ---------- */
   const header = document.getElementById('siteHeader');
+  let scrollTicking = false;
   window.addEventListener('scroll', ()=>{
-    header.classList.toggle('scrolled', window.scrollY > 40);
-  });
+    if(!scrollTicking){
+      requestAnimationFrame(()=>{
+        header.classList.toggle('scrolled', window.scrollY > 40);
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, {passive:true});
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
-  navToggle.addEventListener('click', ()=> navLinks.classList.toggle('open'));
-  navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> navLinks.classList.remove('open')));
+  const navOverlay = document.getElementById('navOverlay');
+
+  function openNav(){
+    navLinks.classList.add('open');
+    navToggle.classList.add('open');
+    navOverlay.classList.add('open');
+    navToggle.setAttribute('aria-expanded','true');
+    document.documentElement.classList.add('nav-open');
+    document.body.classList.add('nav-open');
+  }
+  function closeNav(){
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('open');
+    navOverlay.classList.remove('open');
+    navToggle.setAttribute('aria-expanded','false');
+    document.documentElement.classList.remove('nav-open');
+    document.body.classList.remove('nav-open');
+  }
+  navToggle.addEventListener('click', ()=>{
+    navLinks.classList.contains('open') ? closeNav() : openNav();
+  });
+  navOverlay.addEventListener('click', closeNav);
+  navLinks.querySelectorAll('a').forEach(a=> a.addEventListener('click', closeNav));
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeNav(); });
 
   /* ---------- Hero text reveal (letter/word stagger) ---------- */
   const tl = gsap.timeline({defaults:{ease:'power4.out'}});
